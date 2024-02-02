@@ -73,17 +73,43 @@ ORDER BY students.surname, students.name ASC;
 
 5. Selezionare tutti i corsi di laurea con i relativi corsi e insegnanti
 ```sql
-
+SELECT degrees.name, courses.*, teachers.*
+FROM degrees
+    JOIN courses
+        ON degrees.id = courses.degree_id
+    JOIN course_teacher
+        ON courses.id = course_teacher.course_id
+    JOIN teachers
+        ON course_teacher.teacher_id = teachers.id;
 ```
 
 6. Selezionare tutti i docenti che insegnano nel Dipartimento di Matematica (54)
 ```sql
-
+SELECT DISTINCT teachers.*
+FROM degrees
+    JOIN courses
+        ON degrees.id = courses.degree_id
+    JOIN course_teacher
+        ON courses.id = course_teacher.course_id
+    JOIN teachers
+        ON course_teacher.teacher_id = teachers.id
+    JOIN departments
+        ON degrees.department_id = departments.id
+WHERE departments.name LIKE "Dipartimento di Matematica";
 ```
 
 
 ##### Bonus
 7. Selezionare per ogni studente il numero di tentativi sostenuti per ogni esame, stampando anche il voto massimo. Successivamente, filtrare i tentativi con voto minimo 18.
 ```sql
-
+SELECT students.name, students.surname, courses.name, COUNT(*), MAX(exam_student.vote) 'vote_max'
+FROM students
+    JOIN exam_student
+        ON students.id = exam_student.student_id
+    JOIN exams
+        ON exam_student.exam_id = exams.id
+    JOIN courses
+        ON exams.course_id = courses.id
+GROUP BY students.id, courses.id
+HAVING vote_max >= 18;
 ```
